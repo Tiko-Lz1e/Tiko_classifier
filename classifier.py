@@ -156,15 +156,15 @@ def classifier(data, p, patterns=None):
     if os.path.exists(data['info']['h_file_path']):
         with open(data['info']['h_file_path']) as f:
             i = int(f.read())
-    classes = {}
+    data_classified = {}
     length = len(data['list'])
     if p == "manual":
-        classes = classifier_m(data, i, length)
+        data_classified = classifier_m(data, i, length)
     elif p == "auto_1":
-        classes = classifier_auto(data, patterns, i, length)
+        data_classified = classifier_auto(data, patterns, i, length)
     elif p == "auto_2":
-        classes = classifier_auto(data, patterns, i, length, log=False)
-    return classes
+        data_classified = classifier_auto(data, patterns, i, length, log=False)
+    return data_classified
 
 
 def classifier_m(data, i, length):
@@ -219,8 +219,8 @@ def classifier_auto(data, patterns, i, length, log=True):
                 line = data['list'][i]
                 # 这一部分需要根据数据格式进行修改
                 text = "".join(line[-1].split())
-                if text[len(text) - 1] == '\n':
-                    text[len(text) - 1] = '\0'
+                # if text[len(text) - 1] == '\n':
+                #     text[len(text) - 1] = '\0'
                 tags = line[0]
                 if log:
                     print('\n\n' + str(tags) + '\n')
@@ -255,9 +255,9 @@ def classifier_auto(data, patterns, i, length, log=True):
 
                 if log:
                     print("\n分类信息：{}".format(c))
-                    input()                                       # 自动化运行时，注释掉这一句
+                    input()
                 try:
-                    # if line not in classes[c]:
+                    # if line not in classes[c]:  # 去重
                     classes[c].append(line)
                 except KeyError:
                     classes[c] = [line]
@@ -304,7 +304,7 @@ def save_to_file(classes, file_dir, file_ex):
 
 if __name__ == '__main__':
     os.system('cls')
-    print("\n【欢迎来到Tiko分类器 v1.2.0】\n")
+    print("\n【欢迎来到Tiko分类器 v1.2.1】\n")
     input("\n--->按下回车键开始--->")
     os.system('cls')
     data = {}
