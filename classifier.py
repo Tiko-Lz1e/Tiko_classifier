@@ -125,7 +125,7 @@ def pattern_file_loader():
             f_lines = f.readlines()
             for line in f_lines:
                 line_cuted = line.split('\t')
-                tag = line_cuted[0]
+                tag = "".join(line_cuted[0].split())
                 patterns = line_cuted[1:]
                 pattern_list.append(patterns)
                 tags.append(tag)
