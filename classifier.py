@@ -5,9 +5,28 @@ import csv
 from tqdm import trange
 
 
+def menu():
+    print("\n输入数字并回车进入相应功能")
+    print("1: 加载数据文件(tsv)")
+    print("2: 加载正则表达式文件(tsv)")
+    print("3: 开始进行手动分类")
+    print("4: 开始进行自动分类(显示分类信息)")
+    print("5: 开始进行自动分类(不显示分类信息)")
+    print("6: 将已分类数据保存至文件(tsv)")
+    print("0: 退出系统")
+
+
 def classifier_closer():
-    os.system('cls')
+    print("\n【退出Tiko分类器】\n")
     sys.exit()
+
+
+def re_confirm(msg):
+    confirm = False
+    c = input("\n[!]" + msg + "[Y/N]:\n")
+    if c == "y" or c == "Y":
+        confirm = True
+    return confirm
 
 
 def get_file_encoding(file):
@@ -28,17 +47,6 @@ def get_file_encoding(file):
         except UnicodeDecodeError:
             encoding = "尚不支持的编码方式"
     return encoding
-
-
-def menu():
-    print("\n输入数字并回车进入相应功能")
-    print("1: 加载数据文件(tsv)")
-    print("2: 加载正则表达式文件(tsv)")
-    print("3: 开始进行手动分类")
-    print("4: 开始进行自动分类(显示分类信息)")
-    print("5: 开始进行自动分类(不显示分类信息)")
-    print("6: 将已分类数据保存至文件(tsv)")
-    print("0: 退出系统")
 
 
 def data_file_loader():
@@ -196,8 +204,7 @@ def classifier_m(data, i, length):
             os.system("cls")
     except KeyboardInterrupt:
         os.system('cls')
-        c = input("\n[!]是否更新历史信息[Y|N]\n")
-        if c == "Y" or c == "y":
+        if re_confirm("是否更新历史信息?"):
             with open(data['info']['h_file_path'], "w", encoding="UTF-8") as f:
                 f.write(str(i))
         return classes
@@ -270,8 +277,7 @@ def classifier_auto(data, patterns, i, length, log=True):
     except KeyboardInterrupt:
         t.close()
         os.system('cls')
-        c = input("\n[!]是否更新历史信息[Y|N]\n")
-        if c == "Y" or c == "y":
+        if re_confirm("是否更新历史信息?"):
             with open(data['info']['h_file_path'], "w", encoding="UTF-8") as f:
                 f.write(str(i))
         return classes
@@ -289,9 +295,11 @@ def save_to_file(classes, file_dir, file_ex):
     """
     res = 1
     for cls in classes:
-        print("[+]正在将 {0} 条数据储存至 {1} ".format(str(len(classes[cls])), str(file_dir + "\\" + cls + file_ex)))
+        file_cls = cls.replace("|", ",")   # 替换一些不能出现在文件名中的字符
+        file_cls = file_cls.replace("/", ",")
+        print("[+]正在将 {0} 条数据储存至 {1} ".format(str(len(classes[cls])), str(file_dir + "\\" + file_cls + file_ex)))
         try:
-            with open(str(file_dir + "\\" + cls + file_ex), "a", encoding="UTF-8") as f:
+            with open(str(file_dir + "\\" + file_cls + file_ex), "a", encoding="UTF-8") as f:
                 for line in classes[cls]:
                     Tags = ""
                     for tag in line[0]:
@@ -300,15 +308,14 @@ def save_to_file(classes, file_dir, file_ex):
                     f.write(Tags + "\t" + text + '\n')
         except IOError:
             res = 0
-            print("[!]文件写入失败，请检查代码和文件")
+            print("[!]文件【{0}】写入失败，请检查代码和文件名".format(cls))
             break
-
     return res
 
 
 if __name__ == '__main__':
     os.system('cls')
-    print("\n【欢迎来到Tiko分类器 v1.3.0】\n")
+    print("\n【欢迎来到Tiko分类器 v1.3.1】\n")
     print("\t完善了历史记录更新和分类中断继续提醒")
     input("\n--->按下回车键开始--->")
     os.system('cls')
@@ -326,47 +333,41 @@ if __name__ == '__main__':
         elif choice == '3':
             if data:
                 if classes:
-                    c = input("\n[!]还有数据尚未保存，继续分类将造成这部分数据消失，是否继续分类?[Y|N]\n")
-                    if c == "Y" or c == "y":
+                    if re_confirm("还有数据尚未保存，继续分类将造成这部分数据消失，是否继续分类?"):
                         classes = classifier(data, "manual")
                 else:
                     classes = classifier(data, "manual")
             else:
-                print("[!]缺少必要数据，无法进行手动分类，请先完成数据加载")
+                print("[!]缺少必要数据，无法进行手动分类，请先完成数据加载。")
         elif choice == '4':
             if data and pattern:
                 if classes:
-                    c = input("\n[!]还有数据尚未保存，继续分类将造成这部分数据消失，是否继续分类?[Y|N]\n")
-                    if c == "Y" or c == "y":
+                    if re_confirm("还有数据尚未保存，继续分类将造成这部分数据消失，是否继续分类?"):
                         classes = classifier(data, "auto_1", patterns=pattern)
                 else:
                     classes = classifier(data, "auto_1", patterns=pattern)
             else:
-                print("[!]缺少必要数据，无法进行自动分类，请先完成数据和规则加载")
+                print("[!]缺少必要数据，无法进行自动分类，请先完成数据和规则加载。")
         elif choice == '5':
             if data and pattern:
                 if classes:
-                    c = input("\n[!]还有数据尚未保存，继续分类将造成这部分数据消失，是否继续分类?[Y|N]\n")
-                    if c == "Y" or c == "y":
+                    if re_confirm("还有数据尚未保存，继续分类将造成这部分数据消失，是否继续分类?"):
                         classes = classifier(data, "auto_2", patterns=pattern)
                 else:
                     classes = classifier(data, "auto_2", patterns=pattern)
             else:
-                print("[!]缺少必要数据，无法进行自动分类，请先完成数据和规则加载")
+                print("[!]缺少必要数据，无法进行自动分类，请先完成数据和规则加载。")
         elif choice == '6':
             if classes:
                 save_to_file(classes, data['info']['file_dir'] + "\\" + data['info']['file_name'], data['info']['file_ex'])
                 classes = None
             else:
-                print("[!]无数据，请先进行至少一条数据分类")
+                print("[!]无数据，请先进行至少一条数据分类。")
         elif choice == '0':
             if classes:
-                c = input("\n[!]还有数据尚未保存，是否确认退出?[Y|N]\n")
-                if c == "Y" or c == "y":
-                    print("\n【退出Tiko分类器】")
-                    sys.exit()
-            else:
-                print("\n【退出Tiko分类器】")
-                sys.exit()
+                if not re_confirm("还有数据尚未保存，是否确认退出?"):
+                    pass
+            classifier_closer()
+
         else:
             print("[!]不能识别的指令")
