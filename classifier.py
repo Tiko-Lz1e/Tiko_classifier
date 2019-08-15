@@ -196,8 +196,10 @@ def classifier_m(data, i, length):
             os.system("cls")
     except KeyboardInterrupt:
         os.system('cls')
-        with open(data['info']['h_file_path'], "w", encoding="UTF-8") as f:
-            f.write(str(i))
+        c = input("\n[!]是否更新历史信息[Y|N]\n")
+        if c == "Y" or c == "y":
+            with open(data['info']['h_file_path'], "w", encoding="UTF-8") as f:
+                f.write(str(i))
         return classes
     return classes
 
@@ -268,8 +270,10 @@ def classifier_auto(data, patterns, i, length, log=True):
     except KeyboardInterrupt:
         t.close()
         os.system('cls')
-        with open(data['info']['h_file_path'], "w", encoding="UTF-8") as f:
-            f.write(str(i))
+        c = input("\n[!]是否更新历史信息[Y|N]\n")
+        if c == "Y" or c == "y":
+            with open(data['info']['h_file_path'], "w", encoding="UTF-8") as f:
+                f.write(str(i))
         return classes
     t.close()
     return classes
@@ -304,7 +308,8 @@ def save_to_file(classes, file_dir, file_ex):
 
 if __name__ == '__main__':
     os.system('cls')
-    print("\n【欢迎来到Tiko分类器 v1.2.1】\n")
+    print("\n【欢迎来到Tiko分类器 v1.3.0】\n")
+    print("\t完善了历史记录更新和分类中断继续提醒")
     input("\n--->按下回车键开始--->")
     os.system('cls')
     data = {}
@@ -320,17 +325,32 @@ if __name__ == '__main__':
             pattern = pattern_file_loader()
         elif choice == '3':
             if data:
-                classes = classifier(data, "manual")
+                if classes:
+                    c = input("\n[!]还有数据尚未保存，继续分类将造成这部分数据消失，是否继续分类?[Y|N]\n")
+                    if c == "Y" or c == "y":
+                        classes = classifier(data, "manual")
+                else:
+                    classes = classifier(data, "manual")
             else:
                 print("[!]缺少必要数据，无法进行手动分类，请先完成数据加载")
         elif choice == '4':
             if data and pattern:
-                classes = classifier(data, "auto_1", patterns=pattern)
+                if classes:
+                    c = input("\n[!]还有数据尚未保存，继续分类将造成这部分数据消失，是否继续分类?[Y|N]\n")
+                    if c == "Y" or c == "y":
+                        classes = classifier(data, "auto_1", patterns=pattern)
+                else:
+                    classes = classifier(data, "auto_1", patterns=pattern)
             else:
                 print("[!]缺少必要数据，无法进行自动分类，请先完成数据和规则加载")
         elif choice == '5':
             if data and pattern:
-                classes = classifier(data, "auto_2", patterns=pattern)
+                if classes:
+                    c = input("\n[!]还有数据尚未保存，继续分类将造成这部分数据消失，是否继续分类?[Y|N]\n")
+                    if c == "Y" or c == "y":
+                        classes = classifier(data, "auto_2", patterns=pattern)
+                else:
+                    classes = classifier(data, "auto_2", patterns=pattern)
             else:
                 print("[!]缺少必要数据，无法进行自动分类，请先完成数据和规则加载")
         elif choice == '6':
