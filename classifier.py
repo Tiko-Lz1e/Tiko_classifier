@@ -1,12 +1,12 @@
-#
+# -*- coding:utf-8 -*-
 """
-@Author: Tiko
 @Date: 2019-08-16
+@Author: Tiko
+@Email: twx@bupt.edu.cn
 """
 import re
 import sys
 import os
-import csv
 from tqdm import trange
 
 
@@ -100,7 +100,6 @@ class classifier:
             if info['encoding'] == "UTF-8" or "GB2312":
                 print("【文件读取完毕，可以开始进行分类】")
                 self.dir = self.data['info']['file_dir'] + "/" + self.data['info']['file_name']
-                print(self.dir)
             else:
                 print("【文件已读取完毕，但编码方式未知，分类过程中可能会出现乱码】")
         else:
@@ -116,7 +115,7 @@ class classifier:
         file_dir = os.path.dirname(file)
         file_name_full = os.path.basename(file)
         (file_name, file_ex) = os.path.splitext(file_name_full)
-        h_file_path = file_dir + "\\" + file_name + "\\history.txt"
+        h_file_path = file_dir + "/" + file_name + "/history.txt"
 
         info = {"found": os.path.exists(file), 'file_dir': file_dir, 'file_name': file_name, 'file_ex': file_ex, 'h_file_path': h_file_path}
         # 判断文件是否存在并获取文件编码方式
