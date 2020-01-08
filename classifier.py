@@ -7,16 +7,18 @@
 import re
 import sys
 import os
+import chardet
 from tqdm import trange
 
 
 class classifier:
     def __init__(self):
-        os.system('cls')
+        self.plat = os.name
+        self.screen_cleaner()
         print("\n【欢迎来到Tiko分类器 v1.4】\n")
         print("\t代码整理")
         input("\n--->按下回车键开始--->")
-        os.system('cls')
+        self.screen_cleaner()
         self.data = {}
         self.pattern = []
         self.classes = {}
@@ -39,6 +41,15 @@ class classifier:
         print("\n【退出Tiko分类器】\n")
         sys.exit()
 
+    def screen_cleaner(self):
+        """
+        根据平台进行清屏操作
+        """
+        if self.plat is 'nt':
+            os.system('cls')
+        else:
+            os.system("clear")
+
     def re_confirm(self, msg):
         c = input("\n[!]" + msg + "[Y/N]:\n")
         confirm = True if c in "yY" else False
@@ -46,22 +57,12 @@ class classifier:
 
     def get_file_encoding(self, file):
         """
-        辨别文件是否为GB2312或UTF-8编码
+        辨别文件编码方式
         :param file: 文件路径
         :return: 文件编码方式
         """
-        try:
-            with open(file, "r", encoding="GB2312") as f:
-                f.readline()
-                encoding = "GB2312"
-        except UnicodeDecodeError:
-            try:
-                with open(file, "r", encoding="utf-8") as f:
-                    f.readline()
-                    encoding = 'UTF-8'
-            except UnicodeDecodeError:
-                encoding = "尚不支持的编码方式"
-        return encoding
+        with open(file, 'rb') as f:
+            return chardet.detect(f.read())['encoding']
 
     def data_file_loader(self):
         """
@@ -173,7 +174,7 @@ class classifier:
 
         global i
         self.classes = {}
-        os.system('cls')
+        self.screen_cleaner()
         dir_path = self.dir
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
@@ -217,10 +218,10 @@ class classifier:
                 except KeyError:
                     classes[c] = [line]
 
-                os.system("cls")
+                self.screen_cleaner()
             self.classes.update(classes)
         except KeyboardInterrupt:
-            os.system('cls')
+            self.screen_cleaner()
             if self.re_confirm("是否更新历史信息?"):
                 self.classes.update(classes)
                 with open(data['info']['h_file_path'], "w", encoding="UTF-8") as f:
@@ -284,12 +285,12 @@ class classifier:
                     except KeyError:
                         classes[c] = [line]
                     if log:
-                        os.system("cls")
+                        self.screen_cleaner()
             t.close()
             self.classes.update(classes)
         except KeyboardInterrupt:
             t.close()
-            os.system('cls')
+            self.screen_cleaner()
             if self.re_confirm("是否更新历史信息?"):
                 self.classes.update(classes)
                 with open(data['info']['h_file_path'], "w", encoding="UTF-8") as f:
